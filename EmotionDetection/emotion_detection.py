@@ -16,28 +16,45 @@ def emotion_detector(text_to_analyse):
     # Parsing the JSON response from the API
     formatted_response = json.loads(response.text)
 
-    # Extract the emotions from the response
-    emotions = formatted_response['emotionPredictions'][0]['emotion']
-    anger_score = emotions.get('anger', 0)
-    disgust_score = emotions.get('disgust', 0)
-    fear_score = emotions.get('fear', 0)
-    joy_score = emotions.get('joy', 0)
-    sadness_score = emotions.get('sadness', 0)
-
-     # Create a dictionary of emotions
-    emotion_scores = {
+  
+    if response.status_code == 400:
+        anger_score = None 
+        disgust_score = None 
+        fear_score = None 
+        joy_score = None 
+        sadness_score = None
+        dominant_score = None
+        # Create a dictionary of emotions
+        emotion_scores = {
+        'anger': anger_score,
+        'disgust': disgust_score,
+        'fear': fear_score,
+        'joy': joy_score,
+        'sadness': sadness_score,
+        'dominant_emotion': dominant_score
+        }
+    else:
+        # Extract the emotions from the response
+        emotions = formatted_response['emotionPredictions'][0]['emotion']
+        anger_score = emotions.get('anger', 0)
+        disgust_score = emotions.get('disgust', 0)
+        fear_score = emotions.get('fear', 0)
+        joy_score = emotions.get('joy', 0)
+        sadness_score = emotions.get('sadness', 0)
+        
+        emotion_scores = {
         'anger': anger_score,
         'disgust': disgust_score,
         'fear': fear_score,
         'joy': joy_score,
         'sadness': sadness_score
-    }
-
-    # Find the dominant emotion (the one with the highest score)
-    dominant_emotion = max(emotion_scores, key=emotion_scores.get)
-
-    # Add the dominant emotion to the result
-    emotion_scores['dominant_emotion'] = dominant_emotion
+         }
+       
+        # Find the dominant emotion (the one with the highest score)
+        dominant_emotion = max(emotion_scores, key=emotion_scores.get)
+    
+        # Add the dominant emotion to the result
+        emotion_scores['dominant_emotion'] = dominant_emotion
 
     # Return the final result
     return emotion_scores
